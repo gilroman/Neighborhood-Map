@@ -115,3 +115,7 @@ li:hover {
 	max-width: 100%;
 }
 
+.errorMessage {
+	color: red;
+}
+

@@ -46,30 +46,39 @@ self.query = ko.observable();
 
 self.filteredList = ko.computed(function(){});
 
-// Initialize Google Map
-initMap();
-
 // Store the data for each place in the observable array
 places.forEach(function(listing){
 	self.listings.push(new Place(listing));
-	setMarker(listing.streetAddress);
 });
 
 // Filtered List   STILL NEED TO MAKE THE TAGS ARRAY ALL TO LOWER CASE FOR COMPARISON WITH THE QUERY
 self.filteredList = ko.computed(function(query){
-			if(!self.query()){ return self.listings();}
-			else {
-				var filtered = ko.utils.arrayFilter(self.listings(), function(listing){
-				return (listing.name().toLowerCase().indexOf(self.query().toLowerCase())>-1 || listing.tags().indexOf(self.query())>-1);
-			});
-				return filtered;
-			}
-		});
-
+	if(!self.query()){ return self.listings();}
+	else {
+		var filtered = ko.utils.arrayFilter(self.listings(), function(listing){
+		return (listing.name().toLowerCase().indexOf(self.query().toLowerCase())>-1 || listing.tags().indexOf(self.query())>-1);
+	});
+		return filtered;
+	}
+});
 
 // Filter the list of the observable array listings by the query entered on the serach input box
 self.filterList = function(){
 	return self.filteredList();
+}
+
+//Check to see if google api has loaded
+if (typeof google === 'undefined') {
+	var mapError = document.getElementById('map');
+	mapError.innerHTML = '<p class="errorMessage">Having trouble connecting to Google Map API...</p>';
+} else {
+// Initialize Google Map
+initMap();
+
+self.filteredList().forEach(function(listing){
+	setMarker(listing.streetAddress());
+});
+
 }
 
 }
@@ -87,16 +96,16 @@ ko.applyBindings(new locationsViewModel());
 function initMap() {
   map = new google.maps.Map(document.getElementById('map'), {
     center: {lat: 34.0869409, lng: -118.2702036},
-    zoom: 15
+    zoom: 14
   });
 }
 
-function setMarker(address) {
 
+function setMarker(address) {
 //Initialize the geocoder.
 var geocoder = new google.maps.Geocoder();
 
-//Geocode the location, then center the map on it and zooom in.
+//Geocode the location, then create a marker on the map
 geocoder.geocode(
 {
 	address: address,
@@ -105,7 +114,8 @@ geocoder.geocode(
 	if(status == 'OK') {
 		var marker = new google.maps.Marker({
 			map: map,
-			position: results[0].geometry.location
+			position: results[0].geometry.location,
+			animation: google.maps.Animation.DROP
 		});
 	} else {
 		window.alert('Google Geocoding was not successful because of: ' +status);
