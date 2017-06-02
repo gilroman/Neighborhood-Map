@@ -1,0 +1,117 @@
+/* Fluid foundation - Flexible Content
+*  Media Queries - Make larger adjustments on layout when the content doesn't fit.
+*  Honor the proportions of the design by creating percentage-based grids instead of fixed-width, pixel-based grids
+*/
+
+
+/* Once we have a grid that is based on proportions the content inside the grid must also adjust */
+/* set the max-width to 100%  to tell the image to resolve at it's native resolution */
+/* if you use width by itself the browser will scale the image up as big as it can */
+/* Leave the height setting off*/
+
+
+/*
+display:-webkit-flex;
+  display:-moz-flex;
+  display:-ms-flexbox;
+  display:flex;
+  flex-grow: 1;
+  -moz-flex-grow: 1;
+  -webkit-flex-grow: 1;
+  -ms-flex-grow: 1;
+  -webkit-flex-direction: column-reverse;
+  -moz-flex-direction: column-reverse;
+  -ms-flex-direction: column-reverse;
+  flex-direction: column-reverse;
+
+ */
+
+* {
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+}
+
+html,
+body{
+	-webkit-text-size-adjust: none;
+	height: 100%;
+	width: 100%;
+}
+
+body {
+	font-family: 'Open Sans', sans-serif;
+	font-size: 14px;
+	line-height: 2rem;
+	letter-spacing: 0.2rem;
+	background: black;
+	color: white;
+	background-size: cover;
+	padding: 0 8px 0 8px;
+}
+
+.container {
+	min-height: 100vh;
+}
+
+header {
+	font-size: 1.25rem;
+	margin-top: 18px;
+	text-align: center;
+}
+
+input {
+	margin-right: 8px;
+}
+
+button {
+	appearance: none;
+	box-shadow: none;
+	border-radius: none;
+	border: none;
+	background-color: royalblue;
+	color: white;
+	letter-spacing: 0.2rem;
+}
+
+button:focus {
+	outline: none;
+}
+
+ul {
+	border: 0 solid royalblue;
+	border-width: 0 0 0 0;
+}
+
+li {
+	border: 0 solid royalblue;
+	border-width: 0 0 1px 0;
+	padding-top: 8px;
+	padding-bottom: 8px;
+	padding-left: 2px;
+}
+
+li:hover {
+	color: grey;
+}
+
+.placesListView {
+	padding-bottom: 18px;
+}
+
+.search {
+	margin-top: 18px;
+}
+
+.listings {
+	margin-top: 18px;
+}
+
+.mapview {
+}
+
+#map {
+	height: 100%;
+	max-width: 100%;
+}
+
