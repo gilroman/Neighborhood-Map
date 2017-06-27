@@ -115,6 +115,10 @@ li:hover {
 	max-width: 100%;
 }
 
+.infoWindow {
+	color: black;
+}
+
 .errorMessage {
 	color: red;
 }

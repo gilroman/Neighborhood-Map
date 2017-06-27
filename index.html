@@ -6,16 +6,17 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans">
 <link rel="stylesheet" href="css/reset.css">
 <link rel="stylesheet" href="css/style.css">
+<script src="js/jquery-3.2.1.min.js"></script>
 </head>
 <body>
 <header><h1>Silverlake Explorer</h1></header>
 <section class="placesListView">
 <div class="search">
-    <input type="text" name="query" data-bind="value: query"><button data-bind="click: filterList">Search</button>
+    <input id="query" type="text" name="query" placeholder="search" data-bind="value: query, valueUpdate:'afterkeydown'">
 </div>
 <div class="listings">
     <ul data-bind="foreach: filteredList">
-      <li data-bind="text: name"></li>
+      <li data-bind="text: name,click: $parent.listingClicked.bind($data, $index())"></li>
     </ul>
 </div>
 </section>
@@ -23,7 +24,7 @@
 <script src="js/knockout-3.4.2.js"></script>
 <script src="js/app.js"></script>
 <script async defer
-      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD6ZPCFCg9F4x10T4S1Fnn7H29oCRCx9nw&callback&callback=locationsViewModel">
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD6ZPCFCg9F4x10T4S1Fnn7H29oCRCx9nw&callback=initMap">
 </script>
 </body>
 </html>
