@@ -58,7 +58,7 @@ var Place = function(data) {
 	this.city = ko.observable(data.city);
 	this.state = ko.observable(data.state);
 	this.latLong = ko.observable(data.latLong);
-}
+};
 
 // ViewModel
 function locationsViewModel(places){
@@ -73,7 +73,7 @@ function locationsViewModel(places){
 	// Filter the Listings by name or tags
 	self.filteredList = ko.computed(function(query){
 		var filteredArray = [];
-		if(self.query()==''){
+		if(self.query()===''){
 			filteredArray = self.listings();
 		} else {
 			filteredArray = ko.utils.arrayFilter(self.listings(), function(listing){
@@ -207,15 +207,15 @@ var drawMarker = function(listing){
 
 // Function that creates a new infowindow on a marker with listing information
 var markerInfoWindow = function(description, tips){
-	var contentString = '<div class="infoWindow">'
-												+description+tips
-												+'<p class="attribution">Our venue information is provided by Foursquare</p>'
-											+'</div>';
+	var contentString = '<div class="infoWindow">'+
+												description+tips+
+												'<p class="attribution">Our venue information is provided by Foursquare</p>'+
+											'</div>';
 	var infowindow = new google.maps.InfoWindow({
   	content: contentString
   });
 	return infowindow;
-}
+};
 
 // Function that makes a marker bounce for the amount of time indicated with the timeout argument (in milliseconds)
 var bounce = function(marker, timeout) {
@@ -223,7 +223,7 @@ var bounce = function(marker, timeout) {
   	window.setTimeout(function(){
   		marker.setAnimation(null);
   	}, timeout);
- }
+ };
 
 // Function that binds a click event listener to a marker which will open an infowindo
 var bindInfoWindow = function(marker, infowindow, map){
@@ -231,7 +231,7 @@ var bindInfoWindow = function(marker, infowindow, map){
 		infowindow.open(map, marker);
 		bounce(marker, 2000);
 	});
-}
+};
 
 
 /************************
@@ -250,7 +250,7 @@ var venueUrl = function(clientId, clientSecret, APIversion,latlong, name){
 					'&client_id='+clientId+
 					'&client_secret='+clientSecret+
 					'&v='+APIversion+
-					'&query='+name.replace(/ /g,"%20");+
+					'&query='+name.replace(/ /g,"%20")+
 					'&intent=browse&radius=100';
 };
 
