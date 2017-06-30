@@ -61,21 +61,19 @@ header {
 }
 
 input {
+	font-family: inherit;
+	font-size: 100%;
 	margin-right: 8px;
-}
-
-button {
-	appearance: none;
-	box-shadow: none;
-	border-radius: none;
-	border: none;
-	background-color: royalblue;
-	color: white;
-	letter-spacing: 0.2rem;
-}
-
-button:focus {
+	height: 2rem;
+	width: 350px;
+	border-radius: 28px;
+	border: 2px solid silver;
 	outline: none;
+}
+
+input:focus {
+	border-radius: 28px;
+	border: 2px solid lightgreen;
 }
 
 ul {
@@ -116,7 +114,19 @@ li:hover {
 }
 
 .infoWindow {
+	font-size: .75rem;
 	color: black;
+}
+
+.tips {
+	padding-top: 1rem;
+	padding-bottom: 1rem;
+}
+
+.attribution {
+	font-size: .5rem;
+	padding-top: 1rem;
+	padding-bottom: 1rem;
 }
 
 .errorMessage {

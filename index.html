@@ -16,7 +16,7 @@
 </div>
 <div class="listings">
     <ul data-bind="foreach: filteredList">
-      <li data-bind="text: name,click: $parent.listingClicked.bind($data, $index())"></li>
+      <li data-bind="text: name,click: $parent.listingClicked"></li>
     </ul>
 </div>
 </section>
