@@ -45,7 +45,7 @@ body {
 	line-height: 2rem;
 	letter-spacing: 0.2rem;
 	background: black;
-	color: white;
+	color: darkgray;
 	background-size: cover;
 	padding: 0 8px 0 8px;
 }
@@ -55,7 +55,9 @@ body {
 }
 
 header {
-	font-size: 1.25rem;
+	font-family: 'Scope One', serif;
+	font-size: 1.5rem;
+	color: lightsteelblue;
 	margin-top: 18px;
 	text-align: center;
 }
@@ -69,11 +71,13 @@ input {
 	border-radius: 28px;
 	border: 2px solid silver;
 	outline: none;
+	background-color: mistyrose;
 }
 
 input:focus {
 	border-radius: 28px;
-	border: 2px solid lightgreen;
+	border: 1px solid silver;
+	background-color: navajowhite;
 }
 
 ul {
@@ -82,7 +86,7 @@ ul {
 }
 
 li {
-	border: 0 solid royalblue;
+	border: 0 solid navajowhite;
 	border-width: 0 0 1px 0;
 	padding-top: 8px;
 	padding-bottom: 8px;
