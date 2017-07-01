@@ -34,13 +34,13 @@ var places = [{
 		state:'CA',
 		latLong: {lat: 34.0960504, lng: -118.2849394}
 	},{
-		name:'Micheltorena Stairs',
-		typeOfBusiness:'Stairs',
-		tags:['Walk','Stairs'],
+		name:'Micheltorena Steps',
+		typeOfBusiness:'Trail',
+		tags:['Walk','Stairs', 'Trail'],
 		streetAddress:'3400 Sunset Blvd',
 		city:'Los Angeles',
 		state:'CA',
-		latLong: {lat: 34.087425, lng: -118.2747807697085}
+		latLong: {lat: 34.087150, lng: -118.275679}
 	}];
 
 // Global variable referencing to the google map object
@@ -152,8 +152,6 @@ function initMap(){
   			// Each Venue Goes through these steps
   			//1. get URL's this can be done for all of them in parallel at once
   			var url = venueUrl(fourSquareClientID, fourSquareClientSecret, fourSquareApiVersion, place.latLong, place.name);
-
-
   			//2. get venue object from foursquare & attach the infowindow to the marker
   			get(url)
   			.then(function(response){
@@ -164,7 +162,7 @@ function initMap(){
   				info.content = venueDescription(venueObject);
   				info.tipsUrl = tipsUrl(fourSquareClientID, fourSquareClientSecret, fourSquareApiVersion, venueObject.id);
 
-  				get(info.tipsUrl, info)
+  				get(info.tipsUrl)
 					.then(function(response){
 						return response.json();
 					})
@@ -207,8 +205,7 @@ var drawMarker = function(listing){
 
 // Function that creates a new infowindow on a marker with listing information
 var markerInfoWindow = function(description, tips){
-	var contentString = '<div class="infoWindow">'+
-												description+tips+
+	var contentString = '<div class="infoWindow">' + description + tips +
 												'<p class="attribution">Our venue information is provided by Foursquare</p>'+
 											'</div>';
 	var infowindow = new google.maps.InfoWindow({
@@ -276,7 +273,7 @@ var venueDescription = function(venue){
 			venueTxt = venueTxt.concat(venue.categories[0].name+'<br>');
 		}
 		if(venue.name){
-			venueTxt = venueTxt.concat('<a href="http://foursquare.com/v/'+venue.id+'?ref='+fourSquareClientID+'>'+venue.name+'</a><br>');
+			venueTxt = venueTxt.concat('<a href="http://foursquare.com/v/'+venue.id+'?ref='+fourSquareClientID+'">'+venue.name+'</a><br>');
 		}
 		if(venue.url){
 			venueTxt = venueTxt.concat(venue.url+'<br>');
