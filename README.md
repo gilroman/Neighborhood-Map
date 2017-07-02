@@ -1,5 +1,5 @@
-# Neighborhood-Map
-My implementation of the Neighborhood-Map Project for the Udacity Front End Nanodegree.
+# Neighborhood Map
+My implementation of the Neighborhood Map Project for the Udacity Front End Nanodegree.
 
 The listings in this neighborhood map are in Silverlake, Los Angeles.
 
