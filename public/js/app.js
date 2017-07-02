@@ -10,6 +10,8 @@ fetch('js/data.json')
 	ko.applyBindings(new LocationsViewModel(places));
 })
 .catch(function(error){
+	var dataError = document.getElementById('list');
+	dataError.innerHTML = '<p class="errorMessage">There was an error loading the listing data...</p>';
 	console.log('There was an error loading the data.json file with the listings for the map.', error);
 });
 
@@ -18,6 +20,8 @@ var map;
 
 // Array for markers.
 var markers = [];
+
+var infowindow = null;
 
 // Model - A Class to represent a place listed in the neighborhood map
 var Place = function(data) {
@@ -51,7 +55,6 @@ function LocationsViewModel(places){
 					listing.tags.join(' ').toLowerCase().indexOf(self.query().toLowerCase())>-1);
 			});
 		}
-		console.log(filteredArray);
 		return filteredArray;
 	});
 
@@ -59,7 +62,9 @@ function LocationsViewModel(places){
 	// It compares the marker's title to the listing's name
 	self.showMarkers = ko.computed(function(){
 		var filteredArray = self.filteredList();
-		infowindow.close();
+		if (infowindow){
+			infowindow.close();
+		}
 		if (filteredArray.length === 0){
 			markers.forEach(function(marker){
 				marker.setVisible(false);
@@ -111,7 +116,7 @@ function initMap(){
 
 		var mapListener = google.maps.event.addListenerOnce(map, 'idle', mapLoaded);
 
-		this.infowindow = new google.maps.InfoWindow();
+		infowindow = new google.maps.InfoWindow();
 
 		function mapLoaded(){
   		google.maps.event.removeListener(mapListener);
@@ -123,7 +128,9 @@ function initMap(){
   		var marker = drawMarker(place);
 
   		marker.addListener('click', function(){
-  			openInfoWindow(marker);
+  			infowindow.setContent(infoWindowContent(marker.infoWindowContent, marker.tips));
+				infowindow.open(map, marker);
+				bounce(marker, 2000);
   		});
 
   		markers.push(marker);
@@ -149,12 +156,12 @@ function initMap(){
 					marker.tips = tips(data);
 				})
 				.catch(function(error){
-					marker.tips = 'Error getting tips for' + place.name + 'from Foursquare';
+					marker.tips = 'Error getting tips for ' + place.name + ' from Foursquare';
 					console.log('Error with Foursquare API', Error);
 				});
 			})
   		.catch(function(error){
-  			marker.content = 'Error Getting Venue information about '+ place.name +' from Foursquare';
+  			marker.infoWindowContent = 'Error Getting Venue information about '+ place.name +' from Foursquare';
   			marker.tips = '';
   			console.log('Error with Foursquare API', error);
   		});
@@ -200,14 +207,6 @@ var bounce = function(marker, timeout) {
   }, timeout);
  };
 
-// Function that binds a click event listener to a marker which will open an infowindo
-var openInfoWindow = function(marker){
-	this.infowindow.setContent(infoWindowContent(marker.infoWindowContent, marker.tips));
-	this.infowindow.open(map, marker);
-	bounce(marker, 2000);
-};
-
-
 /************************
 *								 				*
 *		  FOURSQUARE 			 	*
@@ -220,7 +219,7 @@ var fourSquareApiVersion = '20160801';
 // Function that takes the venue, name, latlong object and foursquare api credentials
 // and returns a string with the correct url to request the venue information from the Foursquare API
 var venueUrl = function(clientId, clientSecret, APIversion,latlong, name){
-	return 'https://api.foursquare.com/v2/venues/search?ll='+latlong.lat+','+latlong.lng+
+	return 'https://api.foursquae.com/v2/venues/search?ll='+latlong.lat+','+latlong.lng+
 					'&client_id='+clientId+
 					'&client_secret='+clientSecret+
 					'&v='+APIversion+
