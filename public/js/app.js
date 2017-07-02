@@ -219,7 +219,7 @@ var fourSquareApiVersion = '20160801';
 // Function that takes the venue, name, latlong object and foursquare api credentials
 // and returns a string with the correct url to request the venue information from the Foursquare API
 var venueUrl = function(clientId, clientSecret, APIversion,latlong, name){
-	return 'https://api.foursquae.com/v2/venues/search?ll='+latlong.lat+','+latlong.lng+
+	return 'https://api.foursquare.com/v2/venues/search?ll='+latlong.lat+','+latlong.lng+
 					'&client_id='+clientId+
 					'&client_secret='+clientSecret+
 					'&v='+APIversion+
