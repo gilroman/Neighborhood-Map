@@ -1,4 +1,10 @@
 {
+	"name": "Neighborhood Map",
+	"version": "0.0.1",
+	"description": "Silverlake, Los Angeles Neighborhood Map",
+	"main": "app.js",
+	"author": "Gil Roman",
+	"license": "MIT",
   "dependencies": {
     "express": "^4.15.3"
   }
