@@ -1,0 +1,56 @@
+[{
+	"name": "Night + Market Song",
+	"typeOfBusiness": "Restaurant",
+	"tags": ["Thai", "Restaurant"],
+	"streetAddress": "3322 W. Sunset Blvd.",
+	"city": "Los Angeles",
+	"state": "CA",
+	"latLong": {
+		"lat": 34.086907,
+		"lng": -118.275844
+	}
+}, {
+	"name": "Still Yoga",
+	"typeOfBusiness": "Yoga",
+	"tags": ["Yoga", "Studio"],
+	"streetAddress": "2395 Glendale Blvd",
+	"city": "Los Angeles",
+	"state": "CA",
+	"latLong": {
+		"lat": 34.099983,
+		"lng": -118.259545
+	}
+}, {
+	"name": "Speranza",
+	"typeOfBusiness": "Restaurant",
+	"tags": ["Italian", "Restaurant"],
+	"streetAddress": "2547 Hyperion Ave",
+	"city": "Los Angeles",
+	"state": "CA",
+	"latLong": {
+		"lat": 34.1056681,
+		"lng": -118.2729709
+	}
+}, {
+	"name": "Sunset Boulevard Nursery",
+	"typeOfBusiness": "Plant Nursery",
+	"tags": ["Plants", "Nursery"],
+	"streetAddress": "4368 Sunset Blvd",
+	"city": "Los Angeles",
+	"state": "CA",
+	"latLong": {
+		"lat": 34.0960504,
+		"lng": -118.2849394
+	}
+}, {
+	"name": "Micheltorena Steps",
+	"typeOfBusiness": "Trail",
+	"tags": ["Walk", "Stairs", "Trail"],
+	"streetAddress": "3400 Sunset Blvd",
+	"city": "Los Angeles",
+	"state": "CA",
+	"latLong": {
+		"lat": 34.087150,
+		"lng": -118.275679
+	}
+}]
