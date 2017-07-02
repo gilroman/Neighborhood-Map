@@ -59,6 +59,7 @@ function LocationsViewModel(places){
 	// It compares the marker's title to the listing's name
 	self.showMarkers = ko.computed(function(){
 		var filteredArray = self.filteredList();
+		infowindow.close();
 		if (filteredArray.length === 0){
 			markers.forEach(function(marker){
 				marker.setVisible(false);
