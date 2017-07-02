@@ -1,14 +1,16 @@
-// Get JSON data for listings
-var data = null;
+var places = null;
 
-$.ajax ({ url: 'js/data.json',
-					dataType: 'json',
-					success: function (response){
-   								data = $.parseJSON(response);
-					}
+// Get JSON data for listings
+fetch('js/data.json')
+.then(function(response){
+	return response.json();
 })
-.fail(function(error){
-	console.log('Error loading the data.json file',error);
+.then(function(data){
+	places = data;
+	ko.applyBindings(new LocationsViewModel(places));
+})
+.catch(function(error){
+	console.log('There was an error loading the data.json file with the listings for the map.', error);
 });
 
 // Global variable referencing to the google map object
@@ -19,17 +21,17 @@ var markers = [];
 
 // Model - A Class to represent a place listed in the neighborhood map
 var Place = function(data) {
-	this.name = ko.observable(data.name);
-	this.typeOfBusiness = ko.observable(data.typeOfBusiness);
-	this.tags = ko.observableArray(data.tags);
-	this.streetAddress = ko.observable(data.streetAddress);
-	this.city = ko.observable(data.city);
-	this.state = ko.observable(data.state);
-	this.latLong = ko.observable(data.latLong);
+	this.name = data.name;
+	this.typeOfBusiness = data.typeOfBusiness;
+	this.tags = data.tags;
+	this.streetAddress = data.streetAddress;
+	this.city = data.city;
+	this.state = data.state;
+	this.latLong = data.latLong;
 };
 
 // ViewModel
-function locationsViewModel(places){
+function LocationsViewModel(places){
 	var self = this;
 
 	// An observable array to store locations data
@@ -46,9 +48,10 @@ function locationsViewModel(places){
 		} else {
 			filteredArray = ko.utils.arrayFilter(self.listings(), function(listing){
 				return (listing.name.toLowerCase().indexOf(self.query().toLowerCase())>-1 ||
-				listing.tags.join(' ').toLowerCase().indexOf(self.query().toLowerCase())>-1);
+					listing.tags.join(' ').toLowerCase().indexOf(self.query().toLowerCase())>-1);
 			});
 		}
+		console.log(filteredArray);
 		return filteredArray;
 	});
 
@@ -56,13 +59,19 @@ function locationsViewModel(places){
 	// It compares the marker's title to the listing's name
 	self.showMarkers = ko.computed(function(){
 		var filteredArray = self.filteredList();
-		for(var m=0; m<markers.length; m++){
-			for(var l=0; l<filteredArray.length; l++){
-				if (markers[m].title==filteredArray[l].name){
-					markers[m].setVisible(true);
-					break;
-				} else {
-					markers[m].setVisible(false);
+		if (filteredArray.length == 0){
+			markers.forEach(function(marker){
+				marker.setVisible(false);
+			});
+		} else {
+			for(var m=0; m<markers.length; m++){
+				for(var l=0; l<filteredArray.length; l++){
+					if (markers[m].title==filteredArray[l].name){
+						markers[m].setVisible(true);
+						break;
+					} else {
+						markers[m].setVisible(false);
+					}
 				}
 			}
 		}
@@ -73,16 +82,13 @@ function locationsViewModel(places){
 		var clickedLatLng = place.latLong.lat.toString()+place.latLong.lng.toString().slice(0,11);
 
 		markers.forEach(function(marker){
-			var markerLatLng = marker.position.lat().toString()+marker.position.lng().toString().slice(0,11);
-			if(clickedLatLng === markerLatLng){
+			if (marker.title === place.name) {
 				google.maps.event.trigger(marker, 'click');
 			}
 		});
 	};
 
 }
-
-ko.applyBindings(new locationsViewModel(places));
 
 /*****************
 *								 *
@@ -92,76 +98,78 @@ ko.applyBindings(new locationsViewModel(places));
 
 //Initializes the map and draws the markers
 function initMap(){
+	var mapLoading = document.getElementById('map');
 
-		var mapLoading = document.getElementById('map');
-		mapLoading.innerHTML = '<p class="errorMessage">Loading the Google Map API...</p>';
+	mapLoading.innerHTML = '<p class="errorMessage">Loading the Google Map API...</p>';
 
-		var googleMapPromise = new Promise(function(resolve, reject){
-			map = new google.maps.Map(document.getElementById('map'), {
-    				center: {lat: 34.0869409, lng: -118.2702036},
-    				zoom: 14
-  				});
+	var googleMapPromise = new Promise(function(resolve, reject){
+		map = new google.maps.Map(document.getElementById('map'), {
+    	center: {lat: 34.0869409, lng: -118.2702036},
+    	zoom: 14
+  		});
 
-			var mapListener = google.maps.event.addListenerOnce(map, 'idle', mapLoaded);
+		var mapListener = google.maps.event.addListenerOnce(map, 'idle', mapLoaded);
 
-			function mapLoaded(){
-  			resolve();
-  			google.maps.event.removeListener(mapListener);
-  		}
-  	})
-  	.then(function(){
-  		places.map(function(place){
-  			var marker = drawMarker(place);
-  			markers.push(marker);
+		this.infowindow = new google.maps.InfoWindow();
 
-  			//object to store each venue's description, tipsURL and tips
-  			var info = {};
+		function mapLoaded(){
+  		google.maps.event.removeListener(mapListener);
+  		resolve();
+  	}
+  })
+  .then(function(){
+  	places.map(function(place){
+  		var marker = drawMarker(place);
 
-  			// Each Venue Goes through these steps
-  			//1. get URL's this can be done for all of them in parallel at once
-  			var url = venueUrl(fourSquareClientID, fourSquareClientSecret, fourSquareApiVersion, place.latLong, place.name);
-  			//2. get venue object from foursquare & attach the infowindow to the marker
-  			get(url)
-  			.then(function(response){
-  				return response.json();
-  			})
-  			.then(function(venues){
-  				var venueObject = venue(venues,0);
-  				info.content = venueDescription(venueObject);
-  				info.tipsUrl = tipsUrl(fourSquareClientID, fourSquareClientSecret, fourSquareApiVersion, venueObject.id);
+  		marker.addListener('click', function(){
+  			openInfoWindow(marker);
+  		});
 
-  				get(info.tipsUrl)
-					.then(function(response){
-						return response.json();
-					})
-					.then(function(data){
-						info.tips = tips(data);
-					})
-					.then(function(){
-						var infowindow = markerInfoWindow(info.content, info.tips);
-						bindInfoWindow(marker, infowindow, map);
-					});
+  		markers.push(marker);
+
+  		// Each Venue Goes through these steps
+  		//1. get URL's this can be done for all of them in parallel at once
+  		var url = venueUrl(fourSquareClientID, fourSquareClientSecret, fourSquareApiVersion, place.latLong, place.name);
+  		//2. get venue object from foursquare & attach the information to the marker
+  		get(url)
+  		.then(function(response){
+  			return response.json();
+  		})
+  		.then(function(venues){
+  			var venueObject = venue(venues,0);
+  			marker.infoWindowContent = venueDescription(venueObject);
+  			marker.tipsUrl = tipsUrl(fourSquareClientID, fourSquareClientSecret, fourSquareApiVersion, venueObject.id);
+
+  			get(marker.tipsUrl)
+				.then(function(response){
+					return response.json();
 				})
-  			.catch(function(error){
-  				info.content = 'Error Getting Venue information about '+ place.name +' from Foursquare';
-  				info.tips = '';
-  				var infowindow = markerInfoWindow(info.content, info.tips);
-					bindInfoWindow(marker, infowindow, map);
-  				console.log('Error with Foursquare API', error);
-  			});
+				.then(function(data){
+					marker.tips = tips(data);
+				})
+				.catch(function(error){
+					marker.tips = 'Error getting tips for' + place.name + 'from Foursquare';
+					console.log('Error with Foursquare API', Error);
+				});
+			})
+  		.catch(function(error){
+  			marker.content = 'Error Getting Venue information about '+ place.name +' from Foursquare';
+  			marker.tips = '';
+  			console.log('Error with Foursquare API', error);
+  		});
   	});
-  	})
-  	.catch(function(error){
-  		console.log('Error with Google Map API', error);
-  		var mapLoading = document.getElementById('map');
-			mapLoading.innerHTML = '<p class="errorMessage">Waiting to connect to Google Map API...</p>';
-  	});
+  })
+  .catch(function(error){
+  	console.log('Error with Google Map API', error);
+  	var mapLoading = document.getElementById('map');
+		mapLoading.innerHTML = '<p class="errorMessage">Waiting to connect to Google Map API...</p>';
+  });
 }
 
 function mapError(message, source, error){
 	console.log(message, source, error);
 	var mapLoading = document.getElementById('map');
-			mapLoading.innerHTML = '<p class="errorMessage">Sorry, there was an error initializing the Google Map...</p>';
+	mapLoading.innerHTML = '<p class="errorMessage">Sorry, there was an error initializing the Google Map...</p>';
 }
 
 // Function that takes a listing object as a parameter and draws a single marker
@@ -175,31 +183,27 @@ var drawMarker = function(listing){
 	return marker;
 };
 
-// Function that creates a new infowindow on a marker with listing information
-var markerInfoWindow = function(description, tips){
+// Function that returns the specific content string for an infowindow on a marker
+var infoWindowContent = function(description, tips){
 	var contentString = '<div class="infoWindow">' + description + tips +
 												'<p class="attribution">Our venue information is provided by Foursquare</p>'+
 											'</div>';
-	var infowindow = new google.maps.InfoWindow({
-  	content: contentString
-  });
-	return infowindow;
+	return contentString;
 };
 
 // Function that makes a marker bounce for the amount of time indicated with the timeout argument (in milliseconds)
 var bounce = function(marker, timeout) {
 	marker.setAnimation(google.maps.Animation.BOUNCE);
-  	window.setTimeout(function(){
-  		marker.setAnimation(null);
-  	}, timeout);
+  window.setTimeout(function(){
+  	marker.setAnimation(null);
+  }, timeout);
  };
 
 // Function that binds a click event listener to a marker which will open an infowindo
-var bindInfoWindow = function(marker, infowindow, map){
-	marker.addListener('click', function(){
-		infowindow.open(map, marker);
-		bounce(marker, 2000);
-	});
+var openInfoWindow = function(marker){
+	this.infowindow.setContent(infoWindowContent(marker.infoWindowContent, marker.tips));
+	this.infowindow.open(map, marker);
+	bounce(marker, 2000);
 };
 
 
@@ -280,7 +284,7 @@ var tips = function(data){
 	for (var i=0; i<tipCount; i++){
 		tips = tips.concat('<p>'+data.response.tips.items[i].text+'</p>');
 	}
-		tips = tips.concat('</p>');
+	tips = tips.concat('</p>');
 	return tips;
 };
 
